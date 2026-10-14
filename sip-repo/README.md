@@ -96,8 +96,7 @@ docs/
   screens/          Rendered PNG of each screen
   Sip-Screens.pdf   Print version of the screen designs
   MIDPOINT_REPORT.md
-  DEMO_SCRIPT.md    Recording plan for the demo video
-  build_deck.js     Regenerates the presentation
+  GroupNN-Sip.pptx  Midpoint presentation
 ```
 
 Design and implementation are intentionally separate at this stage. The screens
