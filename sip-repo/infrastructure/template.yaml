@@ -1,0 +1,282 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Sip - drink-level review platform (midpoint prototype)
+
+Parameters:
+  DbPassword:
+    Type: String
+    NoEcho: true
+    MinLength: 8
+    Description: Master password for the PostgreSQL instance.
+  MyIp:
+    Type: String
+    Description: Your public IP in CIDR form (e.g. 203.0.113.4/32) so you can run psql locally.
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Timeout: 15
+    MemorySize: 512
+    Architectures: [arm64]
+    Environment:
+      Variables:
+        DB_HOST: !GetAtt Database.Endpoint.Address
+        DB_NAME: sip
+        DB_USER: sipadmin
+        DB_PASSWORD: !Ref DbPassword
+        PHOTO_BUCKET: !Sub "sip-photos-${AWS::AccountId}-${AWS::Region}"
+
+Resources:
+
+  # ---------- Networking ----------
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags: [{ Key: Name, Value: sip-vpc }]
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+
+  SubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags: [{ Key: Name, Value: sip-subnet-a }]
+
+  SubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      Tags: [{ Key: Name, Value: sip-subnet-b }]
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  SubnetARouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: { SubnetId: !Ref SubnetA, RouteTableId: !Ref RouteTable }
+
+  SubnetBRouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: { SubnetId: !Ref SubnetB, RouteTableId: !Ref RouteTable }
+
+  # S3 gateway endpoint: lets in-VPC Lambdas reach S3 with no NAT gateway.
+  S3Endpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref Vpc
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
+      VpcEndpointType: Gateway
+      RouteTableIds: [!Ref RouteTable]
+
+  LambdaSg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Sip Lambda functions
+      VpcId: !Ref Vpc
+
+  DbSg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Sip PostgreSQL
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref LambdaSg
+          Description: Lambda access
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: !Ref MyIp
+          Description: Developer laptop for schema loading
+
+  # ---------- Storage ----------
+  Database:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    Properties:
+      DBInstanceIdentifier: sip-db
+      Engine: postgres
+      DBInstanceClass: db.t4g.micro
+      AllocatedStorage: '20'
+      DBName: sip
+      MasterUsername: sipadmin
+      MasterUserPassword: !Ref DbPassword
+      DBSubnetGroupName: !Ref DbSubnetGroup
+      VPCSecurityGroups: [!Ref DbSg]
+      PubliclyAccessible: true
+      BackupRetentionPeriod: 0
+      StorageEncrypted: true
+
+  DbSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Sip database subnets
+      SubnetIds: [!Ref SubnetA, !Ref SubnetB]
+
+  PhotoBucket:
+    Type: AWS::S3::Bucket
+    DependsOn: PhotoBucketInvokePermission
+    Properties:
+      BucketName: !Sub "sip-photos-${AWS::AccountId}-${AWS::Region}"
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt ProcessPhotoFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: originals/
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods: [PUT, GET]
+            AllowedOrigins: ['*']
+            AllowedHeaders: ['*']
+
+  # ---------- Identity ----------
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: sip-users
+      UsernameAttributes: [email]
+      AutoVerifiedAttributes: [email]
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireSymbols: false
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      ClientName: sip-web
+      GenerateSecret: false
+      ExplicitAuthFlows: [ALLOW_USER_PASSWORD_AUTH, ALLOW_REFRESH_TOKEN_AUTH]
+
+  # ---------- API ----------
+  Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+      CorsConfiguration:
+        # API Gateway validates origin format, so the literal 'null' origin a
+        # file:// page sends cannot be allowlisted. The demo client is served
+        # from S3 instead, which gives it a real origin.
+        AllowOrigins: ['*']
+        AllowHeaders: ['authorization', 'content-type']
+        AllowMethods: ['GET', 'POST', 'OPTIONS']
+      Auth:
+        DefaultAuthorizer: CognitoAuth
+        Authorizers:
+          CognitoAuth:
+            IdentitySource: $request.header.Authorization
+            JwtConfiguration:
+              audience: [!Ref UserPoolClient]
+              issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}
+
+  # ---------- Functions ----------
+  PresignUploadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/
+      Handler: src/handlers/presignUpload.handler
+      Policies:
+        - S3WritePolicy: { BucketName: !Sub "sip-photos-${AWS::AccountId}-${AWS::Region}" }
+      Events:
+        Post:
+          Type: HttpApi
+          Properties: { ApiId: !Ref Api, Path: /uploads, Method: POST }
+
+  CreateReviewFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/
+      Handler: src/handlers/createReview.handler
+      VpcConfig:
+        SecurityGroupIds: [!Ref LambdaSg]
+        SubnetIds: [!Ref SubnetA, !Ref SubnetB]
+      Events:
+        Post:
+          Type: HttpApi
+          Properties: { ApiId: !Ref Api, Path: /reviews, Method: POST }
+
+  ListRankingsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/
+      Handler: src/handlers/listRankings.handler
+      VpcConfig:
+        SecurityGroupIds: [!Ref LambdaSg]
+        SubnetIds: [!Ref SubnetA, !Ref SubnetB]
+      Events:
+        Get:
+          Type: HttpApi
+          Properties: { ApiId: !Ref Api, Path: /rankings, Method: GET }
+
+  ProcessPhotoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/
+      Handler: src/handlers/processPhoto.handler
+      Timeout: 60
+      MemorySize: 1024
+      VpcConfig:
+        SecurityGroupIds: [!Ref LambdaSg]
+        SubnetIds: [!Ref SubnetA, !Ref SubnetB]
+      Policies:
+        - S3CrudPolicy: { BucketName: !Sub "sip-photos-${AWS::AccountId}-${AWS::Region}" }
+
+  # S3 must be allowed to invoke the function before the bucket's notification
+  # is validated. SourceArn is built from the literal bucket name, not !Ref,
+  # so nothing here points back at the bucket resource.
+  PhotoBucketInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt ProcessPhotoFunction.Arn
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub "arn:${AWS::Partition}:s3:::sip-photos-${AWS::AccountId}-${AWS::Region}"
+
+Outputs:
+  ApiBaseUrl:
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/prod
+  UserPoolId:
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Value: !Ref UserPoolClient
+  PhotoBucketName:
+    Value: !Ref PhotoBucket
+  DbEndpoint:
+    Value: !GetAtt Database.Endpoint.Address

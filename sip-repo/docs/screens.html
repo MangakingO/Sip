@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sip — all screens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --paper:#FBF9F6; --card:#FFFFFF; --sand:#F2ECE3; --hair:#E6DFD5;
+    --ink:#211D1A; --body:#5E574E; --faint:#918878;
+    --brick:#A33C2C; --up:#3F7A4E; --down:#B4463A; --pine:#4E6B4F; --amber:#B8832E; --cream:#FDF6EE;
+  }
+  *,*::before,*::after { box-sizing:border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top,0px); }
+  body { margin:0; background:var(--paper); color:var(--ink); font:400 16px/1.5 Inter,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  .page { max-width:1240px; margin:0 auto; padding:3rem 1.25rem 5rem; }
+  .intro { max-width:34rem; margin-bottom:2.5rem; }
+  .intro h1 { font:600 2.4rem/1.1 Fraunces,Georgia,serif; margin:0 0 .6rem; letter-spacing:-.01em; }
+  .intro p { margin:0; color:var(--body); }
+  .screens { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,340px)); gap:2.5rem 2rem; justify-content:center; }
+  .wrap { display:flex; flex-direction:column; align-items:center; }
+  .label { margin-bottom:.7rem; font-size:.82rem; font-weight:500; color:var(--faint); }
+  .phone { width:320px; height:660px; background:var(--paper); border:9px solid #26211C; border-radius:34px; overflow:hidden; position:relative; display:flex; flex-direction:column; box-shadow:0 18px 40px -18px rgba(33,29,26,.4); }
+  .scroll { flex:1; overflow:hidden; position:relative; }
+  .bar { display:flex; justify-content:space-between; padding:.55rem 1rem .1rem; font-size:.68rem; color:var(--faint); }
+  .nav { border-top:1px solid var(--hair); background:var(--card); display:flex; padding:.55rem 0 .7rem; }
+  .nav div { flex:1; text-align:center; font-size:.62rem; color:var(--faint); }
+  .nav div.on { color:var(--brick); font-weight:600; }
+  .nav i { display:block; font-size:1.02rem; font-style:normal; margin-bottom:.1rem; }
+
+  /* ---------- LAUNCH ---------- */
+  .launch { position:absolute; inset:0; background:var(--paper); z-index:5; display:grid; place-items:center; overflow:hidden; }
+  .cup { transform-origin:28% 92%; }
+  .launch.go .cup { animation: tilt .95s cubic-bezier(.45,.05,.3,1) .5s forwards; }
+  @keyframes tilt { 0%{transform:rotate(0)} 22%{transform:rotate(5deg)} 100%{transform:rotate(-46deg)} }
+  .pour { opacity:0; }
+  .launch.go .pour { animation: show .4s ease-in 1s forwards; }
+  @keyframes show { to { opacity:1; } }
+
+  .wave {
+    position:absolute; left:0; right:0; bottom:0; height:100%;
+    background:var(--brick); transform:translateY(100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .wave::before {
+    content:''; position:absolute; left:-10%; right:-10%; top:-38px; height:76px;
+    background:var(--brick); border-radius:50%;
+  }
+  .launch.go .wave { animation: rise .85s cubic-bezier(.4,0,.25,1) 1.25s forwards; }
+  @keyframes rise { to { transform:translateY(0); } }
+
+  .wave-txt { position:relative; text-align:center; opacity:0; transform:translateY(22px); }
+  .launch.go .wave-txt { animation: lift-in .6s cubic-bezier(.2,.7,.3,1) 1.75s forwards; }
+  @keyframes lift-in { to { opacity:1; transform:translateY(0); } }
+  .wordmark { font:600 3rem/1 Fraunces,Georgia,serif; color:var(--cream); letter-spacing:-.02em; }
+  .quote { font:400 italic .92rem/1.5 Fraunces,Georgia,serif; color:rgba(253,246,238,.82); max-width:15rem; margin:.5rem auto 0; min-height:2.8em; }
+  .launch.go { animation: clear .45s ease-out 3.5s forwards; }
+  @keyframes clear { to { opacity:0; visibility:hidden; } }
+
+  .replay { position:absolute; bottom:1rem; left:50%; transform:translateX(-50%); font:500 .72rem Inter,sans-serif; color:var(--faint); background:var(--card); border:1px solid var(--hair); border-radius:999px; padding:.3rem .8rem; cursor:pointer; z-index:9; }
+
+  /* ---------- FEED ---------- */
+  .feed-top { display:flex; align-items:center; justify-content:space-between; padding:.5rem 1rem .7rem; border-bottom:1px solid var(--hair); }
+  .seg { display:flex; gap:1rem; }
+  .seg span { font-size:.84rem; color:var(--faint); padding-bottom:.25rem; }
+  .seg span.on { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--brick); }
+  .pill { font-size:.72rem; color:var(--body); background:var(--card); border:1px solid var(--hair); border-radius:999px; padding:.22rem .6rem; }
+  .post { display:flex; gap:.65rem; padding:.85rem 1rem .4rem; }
+  .lane { display:flex; flex-direction:column; align-items:center; flex:none; }
+  .av { width:30px; height:30px; border-radius:50%; display:grid; place-items:center; color:#fff; font-size:.75rem; font-weight:600; }
+  .thread { flex:1; width:2px; background:var(--hair); margin-top:.4rem; }
+  .post-main { flex:1; min-width:0; }
+  .line1 { display:flex; align-items:baseline; gap:.35rem; }
+  .line1 b { font-size:.84rem; font-weight:600; }
+  .line1 small { font-size:.72rem; color:var(--faint); }
+  .dname { font:600 1.02rem/1.3 Fraunces,Georgia,serif; margin:.15rem 0 .05rem; }
+  .where { font-size:.74rem; color:var(--faint); }
+  .stars { color:var(--brick); font-size:.78rem; letter-spacing:.05em; }
+  .stars .off { color:#DCD4C8; }
+  .srow { display:flex; align-items:center; gap:.4rem; margin:.3rem 0 .35rem; }
+  .srow em { font-style:normal; font-size:.74rem; color:var(--faint); }
+  .body-text { font-size:.84rem; line-height:1.5; color:var(--body); margin:0 0 .55rem; }
+  .shot { height:150px; border-radius:10px; position:relative; overflow:hidden; }
+  .shot .mod { position:absolute; top:.5rem; left:.5rem; font-size:.66rem; font-weight:500; color:#EDF1EA; background:rgba(78,107,79,.9); padding:.15rem .45rem; border-radius:3px; }
+  .acts { display:flex; gap:1rem; margin-top:.5rem; font-size:.72rem; color:var(--faint); }
+
+  /* ---------- MAP ---------- */
+  .map-shell { position:absolute; inset:0; }
+  .controls { position:absolute; top:.6rem; left:.6rem; right:.6rem; display:flex; gap:.4rem; z-index:3; }
+  .ctl { background:var(--card); border:1px solid var(--hair); border-radius:999px; padding:.35rem .7rem; font-size:.74rem; font-weight:500; color:var(--ink); box-shadow:0 2px 8px rgba(33,29,26,.1); white-space:nowrap; }
+  .ctl.dark { background:var(--ink); color:#F6F1E9; border-color:var(--ink); }
+  .pin { position:absolute; transform:translate(-50%,-100%); background:var(--card); border-radius:999px; padding:.18rem .45rem; font-size:.74rem; font-weight:700; color:var(--ink); box-shadow:0 2px 6px rgba(33,29,26,.22); white-space:nowrap; }
+  .pin.hot { background:var(--brick); color:#FDF8F2; }
+  .pin small { display:block; font-size:.58rem; font-weight:500; color:var(--faint); margin-top:-1px; }
+  .pin.hot small { color:rgba(253,248,242,.8); }
+  .sheet-card { position:absolute; left:.6rem; right:.6rem; bottom:.6rem; z-index:4; background:var(--card); border:1px solid var(--hair); border-radius:12px; overflow:hidden; box-shadow:0 8px 24px -8px rgba(33,29,26,.3); }
+  .sheet-img { height:88px; background:linear-gradient(145deg,#E4D5BE,#B9906A); }
+  .sheet-txt { padding:.6rem .75rem .7rem; }
+  .sheet-txt h3 { font:600 1rem/1.2 Fraunces,Georgia,serif; margin:0 0 .15rem; }
+  .sheet-txt .meta { font-size:.72rem; color:var(--faint); }
+
+  /* ---------- COMPARE ---------- */
+  .search { margin:.3rem 1rem .7rem; display:flex; align-items:center; gap:.5rem; background:var(--card); border:1px solid var(--hair); border-radius:999px; padding:.45rem .8rem; }
+  .search span { color:var(--faint); font-size:.85rem; }
+  .search b { font-size:.86rem; font-weight:500; }
+  .cmp-head { padding:0 1rem .5rem; }
+  .cmp-head h2 { font:600 1.4rem/1.2 Fraunces,Georgia,serif; margin:0; }
+  .cmp-head p { margin:.1rem 0 0; font-size:.74rem; color:var(--faint); }
+  .rankrow { display:flex; align-items:center; gap:.65rem; padding:.6rem 1rem; border-bottom:1px solid var(--hair); }
+  .pos { width:18px; font-size:.78rem; font-weight:700; color:var(--faint); flex:none; text-align:right; }
+  .rthumb { width:42px; height:42px; border-radius:8px; flex:none; }
+  .rinfo { flex:1; min-width:0; }
+  .rinfo p { margin:0; font-size:.85rem; font-weight:600; }
+  .rinfo small { font-size:.7rem; color:var(--faint); }
+  .rscore { text-align:right; flex:none; }
+  .rscore b { display:block; font:600 1.15rem/1 Fraunces,Georgia,serif; color:var(--brick); }
+  .rscore span { font-size:.62rem; color:var(--faint); }
+  .best { background:#FBF2EF; }
+  .bestflag { font-size:.6rem; font-weight:700; color:var(--brick); letter-spacing:.04em; }
+
+  /* ---------- PROFILE ---------- */
+  .p-top { text-align:center; padding:1rem 1rem .5rem; }
+  .p-av { width:62px; height:62px; border-radius:50%; margin:0 auto .5rem; background:linear-gradient(145deg,#C98E72,#8E5B45); }
+  .p-top h2 { font:700 1.15rem/1.2 Inter,sans-serif; margin:0; }
+  .p-top p { margin:.12rem 0 0; font-size:.74rem; color:var(--faint); }
+  .rank { margin:.7rem 1rem .8rem; background:var(--ink); border-radius:10px; padding:.8rem .9rem; }
+  .rank-lab { font-size:.62rem; color:rgba(246,241,233,.6); letter-spacing:.04em; }
+  .rank h3 { font:600 1.3rem/1.2 Fraunces,Georgia,serif; margin:.12rem 0 .45rem; color:var(--amber); }
+  .track { height:4px; border-radius:2px; background:rgba(246,241,233,.2); }
+  .fill { height:4px; border-radius:2px; background:var(--amber); width:53%; }
+  .rank small { display:block; margin-top:.38rem; font-size:.68rem; color:rgba(246,241,233,.65); }
+  .grid3s { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; padding:0 1rem .8rem; }
+  .mini { background:var(--card); border:1px solid var(--hair); border-radius:8px; padding:.55rem .3rem; text-align:center; }
+  .mini b { display:block; font:600 1.25rem/1 Fraunces,Georgia,serif; color:var(--brick); }
+  .mini span { font-size:.62rem; color:var(--faint); }
+  .p-sorts { display:flex; gap:.4rem; padding:0 1rem .55rem; }
+  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
+  .tile { position:relative; aspect-ratio:3/4; }
+  .tile .sc { position:absolute; left:5px; bottom:4px; color:#fff; font-size:.78rem; font-weight:700; text-shadow:0 1px 3px rgba(0,0,0,.55); }
+  .tile .sc small { font-size:.58rem; font-weight:500; display:block; margin-top:-2px; opacity:.9; }
+
+  /* ---------- RANKS ---------- */
+  .ranks-head { padding:.5rem 1rem .8rem; }
+  .ranks-head h2 { font:600 1.4rem/1.2 Fraunces,Georgia,serif; margin:0; }
+  .ranks-head p { margin:.15rem 0 0; font-size:.76rem; color:var(--faint); }
+  .rk { display:flex; gap:.7rem; align-items:center; padding:.6rem 1rem; border-bottom:1px solid var(--hair); }
+  .rk-dot { width:30px; height:30px; border-radius:50%; flex:none; display:grid; place-items:center; font-size:.78rem; font-weight:700; background:var(--sand); color:var(--faint); }
+  .rk.done .rk-dot { background:var(--pine); color:#fff; }
+  .rk.now { background:#FBF2EF; }
+  .rk.now .rk-dot { background:var(--brick); color:#fff; }
+  .rk-main { flex:1; }
+  .rk-main p { margin:0; font:600 .95rem/1.2 Fraunces,Georgia,serif; }
+  .rk-main small { font-size:.7rem; color:var(--faint); }
+  .rk-req { font-size:.72rem; color:var(--faint); flex:none; }
+  .rk.now .rk-req { color:var(--brick); font-weight:600; }
+  .nowbar { margin:.5rem 1rem .2rem; }
+  .nowbar .track { background:var(--hair); }
+  .nowbar .fill { background:var(--brick); }
+  .nowbar small { display:block; margin-top:.3rem; font-size:.7rem; color:var(--faint); }
+  .rk-foot { padding:.8rem 1rem 1rem; font-size:.74rem; line-height:1.5; color:var(--body); }
+
+  /* ---------- SHEETS ---------- */
+  .dim { position:absolute; inset:0; background:rgba(33,29,26,.45); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--paper); border-radius:16px 16px 0 0; max-height:92%; overflow:hidden; }
+  .grab { width:34px; height:3px; background:var(--hair); border-radius:2px; margin:.6rem auto; }
+  .sheet-head { padding:0 1rem .7rem; border-bottom:1px solid var(--hair); }
+  .sheet-head h3 { font:600 1.12rem/1.2 Fraunces,Georgia,serif; margin:0; }
+  .sheet-head span { font-size:.7rem; color:var(--faint); }
+  .sheet-body { padding:.85rem 1rem 1.1rem; }
+  .lab { font-size:.72rem; color:var(--faint); margin-bottom:.3rem; }
+  .field { border:1px solid var(--hair); background:var(--card); border-radius:7px; padding:.55rem .65rem; font-size:.82rem; color:var(--ink); margin-bottom:.75rem; }
+  .bigstars { font-size:1.45rem; color:var(--brick); letter-spacing:.12em; margin-bottom:.8rem; }
+  .bigstars .off { color:#DCD4C8; }
+  .trow { display:flex; align-items:center; gap:.6rem; border:1px solid var(--hair); background:var(--card); border-radius:7px; padding:.55rem .65rem; margin-bottom:.75rem; }
+  .trow p { margin:0; font-size:.8rem; font-weight:500; }
+  .trow small { font-size:.68rem; color:var(--faint); }
+  .sw { margin-left:auto; width:34px; height:19px; border-radius:10px; background:#DCD4C8; position:relative; flex:none; }
+  .sw::after { content:''; position:absolute; width:15px; height:15px; border-radius:50%; background:#fff; top:2px; left:2px; }
+  .sw.on { background:var(--brick); }
+  .sw.on::after { left:auto; right:2px; }
+  .locfound { display:flex; align-items:center; gap:.45rem; font-size:.74rem; color:var(--pine); background:#EDF1EA; border-radius:7px; padding:.5rem .6rem; margin-bottom:.75rem; }
+  .drop { border:1.5px solid var(--pine); border-radius:9px; background:#EDF1EA; overflow:hidden; margin-bottom:.85rem; }
+  .drop .prev { height:112px; background:linear-gradient(145deg,#DDE3D0,#8FA37C); }
+  .drop .cap { padding:.4rem .6rem; font-size:.72rem; color:var(--pine); }
+  .cta { background:var(--brick); color:#FDF8F2; text-align:center; border-radius:7px; padding:.65rem; font-size:.88rem; font-weight:500; }
+  .cta.ghost { background:transparent; color:var(--faint); border:1px solid var(--hair); margin-top:.45rem; }
+
+
+  /* ---------- COMMENTS ---------- */
+  .topbar { display:flex; align-items:center; gap:.6rem; padding:.45rem 1rem .6rem; border-bottom:1px solid var(--hair); }
+  .topbar .bk { font-size:.95rem; color:var(--ink); }
+  .topbar h3 { font:600 .92rem/1.2 Inter,sans-serif; margin:0; }
+  .cmt { display:flex; gap:.6rem; padding:.6rem 1rem; }
+  .cmt .av { width:26px; height:26px; font-size:.68rem; }
+  .cmt-main { flex:1; min-width:0; }
+  .cmt-main .h { display:flex; align-items:baseline; gap:.3rem; }
+  .cmt-main .h b { font-size:.78rem; font-weight:600; }
+  .cmt-main .h small { font-size:.68rem; color:var(--faint); }
+  .cmt-main p { margin:.1rem 0 .25rem; font-size:.8rem; line-height:1.45; color:var(--body); }
+  .cmt-main .u { font-size:.68rem; color:var(--faint); display:flex; gap:.8rem; }
+  .cmt.nested { padding-left:2.6rem; }
+  .op { font-size:.6rem; font-weight:700; color:var(--brick); letter-spacing:.03em; }
+  .composer { display:flex; align-items:center; gap:.5rem; border-top:1px solid var(--hair); background:var(--card); padding:.55rem .8rem; }
+  .composer .box { flex:1; border:1px solid var(--hair); border-radius:999px; padding:.4rem .75rem; font-size:.78rem; color:var(--faint); }
+  .composer .send { font-size:.78rem; font-weight:600; color:var(--brick); }
+  .rule-note { font-size:.68rem; color:var(--faint); text-align:center; padding:.35rem 1rem .5rem; background:var(--sand); }
+  .locked { margin:.7rem 1rem; border:1px dashed var(--hair); border-radius:10px; padding:.9rem; text-align:center; }
+  .locked .ico { font-size:1.3rem; }
+  .locked p { margin:.35rem 0 .15rem; font-size:.84rem; font-weight:600; }
+  .locked small { font-size:.72rem; color:var(--faint); line-height:1.45; display:block; }
+
+  .sorts { display:flex; gap:.4rem; padding:0 1rem .6rem; }
+
+  .dtabs { display:flex; gap:1.1rem; padding:.2rem 1rem .5rem; border-bottom:1px solid var(--hair); }
+  .dtabs span { font-size:.82rem; color:var(--faint); padding-bottom:.3rem; }
+  .dtabs span.on { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--brick); }
+
+  .shead { padding:.6rem 1rem .4rem; }
+  .shead h2 { font:600 1.35rem/1.2 Fraunces,Georgia,serif; margin:0; }
+  .shead p { margin:.1rem 0 0; font-size:.72rem; color:var(--faint); }
+
+  /* leaderboard */
+  .lb { display:flex; align-items:center; gap:.6rem; padding:.55rem 1rem; border-bottom:1px solid var(--hair); }
+  .lb .pos { width:16px; text-align:right; font-size:.76rem; font-weight:700; color:var(--faint); flex:none; }
+  .lb .th { width:40px; height:40px; border-radius:8px; flex:none; }
+  .lb .info { flex:1; min-width:0; }
+  .lb .info p { margin:0; font:600 .9rem/1.25 Fraunces,Georgia,serif; }
+  .lb .info small { font-size:.69rem; color:var(--faint); display:block; }
+  .lb .right { text-align:right; flex:none; }
+  .lb .right b { display:block; font:600 1rem/1 Fraunces,Georgia,serif; color:var(--brick); }
+  .mv { font-size:.68rem; font-weight:700; display:inline-flex; align-items:center; gap:.12rem; margin-top:.12rem; }
+  .mv.up { color:var(--up); }
+  .mv.down { color:var(--down); }
+  .mv.flat { color:var(--faint); font-weight:500; }
+  .mv.new { color:var(--amber); }
+  .lb.top3 { background:#FBF2EF; }
+
+  /* trending */
+  .tr { display:flex; align-items:center; gap:.65rem; padding:.6rem 1rem; border-bottom:1px solid var(--hair); }
+  .tr .th { width:46px; height:46px; border-radius:8px; flex:none; }
+  .tr .info { flex:1; min-width:0; }
+  .tr .info p { margin:0; font:600 .92rem/1.25 Fraunces,Georgia,serif; }
+  .tr .info small { font-size:.69rem; color:var(--faint); }
+  .spark { display:flex; align-items:flex-end; gap:2px; height:22px; flex:none; }
+  .spark i { width:3px; background:var(--up); border-radius:1px; display:block; }
+  .tr .pct { font-size:.74rem; font-weight:700; color:var(--up); flex:none; width:40px; text-align:right; }
+
+  /* location detail */
+  .hero { height:142px; position:relative; background:linear-gradient(145deg,#E4D5BE,#B9906A); }
+  .hero .bk { position:absolute; top:.6rem; left:.6rem; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.93); display:grid; place-items:center; font-size:.85rem; }
+  .hero .attr { position:absolute; bottom:.35rem; right:.5rem; font-size:.56rem; color:rgba(255,255,255,.9); text-shadow:0 1px 2px rgba(0,0,0,.5); }
+  .ldet { padding:.7rem 1rem .5rem; }
+  .ldet h2 { font:600 1.3rem/1.2 Fraunces,Georgia,serif; margin:0; }
+  .ldet .addr { font-size:.73rem; color:var(--faint); margin-top:.1rem; }
+  .openrow { display:flex; align-items:center; gap:.4rem; margin-top:.5rem; font-size:.78rem; }
+  .dot { width:7px; height:7px; border-radius:50%; background:var(--pine); flex:none; }
+  .open { color:var(--pine); font-weight:600; }
+  .hours { margin:.5rem 1rem; background:var(--card); border:1px solid var(--hair); border-radius:9px; padding:.55rem .7rem; }
+  .hrow { display:flex; justify-content:space-between; font-size:.74rem; padding:.12rem 0; color:var(--body); }
+  .hrow.today { color:var(--ink); font-weight:600; }
+  .acts2 { display:flex; gap:.45rem; padding:0 1rem .6rem; }
+  .act { flex:1; text-align:center; border:1px solid var(--hair); background:var(--card); border-radius:8px; padding:.45rem .3rem; font-size:.71rem; font-weight:500; }
+  .act.primary { background:var(--ink); color:#F6F1E9; border-color:var(--ink); }
+  .menuwrap { margin:0 1rem .6rem; border:1px solid var(--hair); border-radius:9px; overflow:hidden; }
+  .menubar { display:flex; align-items:center; gap:.4rem; background:var(--sand); padding:.4rem .6rem; font-size:.69rem; color:var(--faint); }
+  .menubody { background:var(--card); padding:.55rem .7rem; }
+  .mitem { display:flex; justify-content:space-between; font-size:.76rem; padding:.18rem 0; }
+  .mitem small { color:var(--faint); }
+
+  /* saved */
+  .sv { display:flex; gap:.65rem; padding:.6rem 1rem; border-bottom:1px solid var(--hair); }
+  .sv .th { width:52px; height:52px; border-radius:8px; flex:none; }
+  .sv .info { flex:1; min-width:0; }
+  .sv .info p { margin:0; font:600 .92rem/1.25 Fraunces,Georgia,serif; }
+  .sv .info small { font-size:.69rem; color:var(--faint); display:block; }
+  .sv .bm { color:var(--brick); font-size:.95rem; flex:none; }
+
+  /* review again */
+  .again { margin:.7rem 1rem; background:#FBF2EF; border:1px solid #EBD6D0; border-radius:10px; padding:.7rem .8rem; }
+  .again p { margin:0 0 .15rem; font-size:.84rem; font-weight:600; }
+  .again small { font-size:.73rem; color:var(--body); line-height:1.45; display:block; }
+  .prevcard { margin:.6rem 1rem; border:1px solid var(--hair); border-radius:10px; overflow:hidden; background:var(--card); }
+  .prevcard .img { height:92px; background:linear-gradient(145deg,#EFE4D4,#C3A277); }
+  .prevcard .tx { padding:.5rem .7rem .6rem; }
+  .prevcard .tx b { font:600 .92rem/1.2 Fraunces,Georgia,serif; display:block; }
+  .prevcard .tx small { font-size:.7rem; color:var(--faint); }
+  .cta2 { background:var(--brick); color:#FDF8F2; text-align:center; border-radius:7px; padding:.62rem; font-size:.86rem; font-weight:500; margin:0 1rem .5rem; }
+  .cta2.ghost { background:transparent; color:var(--faint); border:1px solid var(--hair); }
+
+  /* empty */
+  .empty { padding:2.2rem 1.4rem 1rem; text-align:center; }
+  .empty .ico { font-size:2rem; }
+  .empty h2 { font:600 1.25rem/1.25 Fraunces,Georgia,serif; margin:.6rem 0 .3rem; }
+  .empty p { margin:0 0 1.1rem; font-size:.84rem; color:var(--body); line-height:1.5; }
+  .firstcard { margin:0 1rem .6rem; border:1px solid var(--hair); border-radius:10px; background:var(--card); overflow:hidden; text-align:left; }
+  .firstcard .img { height:86px; background:linear-gradient(145deg,#DDE3D0,#8FA37C); }
+  .firstcard .tx { padding:.55rem .7rem .65rem; }
+  .firstcard .tx b { font:600 .95rem/1.2 Fraunces,Georgia,serif; display:block; }
+  .firstcard .tx small { font-size:.7rem; color:var(--faint); }
+  .badge-first { display:inline-block; margin-top:.3rem; font-size:.63rem; font-weight:700; color:var(--amber); letter-spacing:.03em; }
+
+
+  .summary { background:var(--sand); border-radius:9px; padding:.7rem .75rem; margin-bottom:.8rem; }
+  .summary .t { font:600 1rem/1.2 Fraunces,Georgia,serif; }
+  .summary .s { font-size:.72rem; color:var(--faint); margin-bottom:.25rem; }
+  textarea.field { width:100%; height:68px; font-family:Inter,sans-serif; resize:none; }
+  .field.dim-text { color:var(--faint); }
+
+  .notes { max-width:34rem; margin:3rem auto 0; color:var(--body); font-size:.92rem; }
+  .notes h2 { font:600 1.3rem/1.2 Fraunces,Georgia,serif; color:var(--ink); margin:2rem 0 .6rem; }
+  .notes li { margin-bottom:.5rem; }
+  @media (prefers-reduced-motion: reduce) {
+    .launch.go, .launch.go .cup, .launch.go .wave, .launch.go .wave-txt { animation:none; }
+    .launch.go .wave { transform:translateY(0); }
+    .launch.go .wave-txt { opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="intro">
+    <h1>Sip — every screen</h1>
+    <p>Seventeen screens in flow order: launch, feed and replies, map and location, the three Drinks sections, saved, the review flow including the already-reviewed case, the empty state, and profile with ranks.</p>
+  </div>
+
+  <div class="screens">
+
+    <!-- LAUNCH -->
+    <div class="wrap">
+      <div class="label">Launch — wave, then hold</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="feed-top">
+            <div class="seg"><span class="on">Following</span><span>Nearby</span></div>
+            <span class="pill">Dallas ▾</span>
+          </div>
+          <div class="post">
+            <div class="lane"><div class="av" style="background:#8E5B45">M</div><div class="thread"></div></div>
+            <div class="post-main">
+              <div class="line1"><b>maya_sips</b><small>· 2h</small></div>
+              <p class="dname">Dirty Matcha</p>
+              <div class="where">LaLaLand Cafe</div>
+            </div>
+          </div>
+
+          <div class="launch" id="launch">
+            <svg class="cup" width="104" height="104" viewBox="0 0 110 110" fill="none" aria-label="Coffee cup">
+              <path class="pour" d="M44 74 C44 86, 42 94, 40 102" stroke="#A33C2C" stroke-width="5" stroke-linecap="round"/>
+              <path d="M26 36 h50 v26 a25 25 0 0 1 -50 0 z" fill="#FFFFFF" stroke="#211D1A" stroke-width="3.5" stroke-linejoin="round"/>
+              <path d="M30 40 h42 v9 a21 21 0 0 1 -42 0 z" fill="#A33C2C"/>
+              <path d="M76 42 a12 12 0 0 1 0 20" stroke="#211D1A" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+              <ellipse cx="51" cy="36" rx="25" ry="5.5" fill="#FFFFFF" stroke="#211D1A" stroke-width="3.5"/>
+              <ellipse cx="51" cy="36" rx="18" ry="3.2" fill="#A33C2C"/>
+            </svg>
+            <div class="wave">
+              <div class="wave-txt">
+                <div class="wordmark">Sip</div>
+                <div class="quote" id="quote">Somewhere nearby, someone just found their new usual.</div>
+              </div>
+            </div>
+          </div>
+          <button class="replay" id="replay">Replay</button>
+        </div>
+        <div class="nav">
+          <div class="on"><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEED -->
+    <div class="wrap">
+      <div class="label">Feed</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="feed-top">
+            <div class="seg"><span class="on">Following</span><span>Nearby</span></div>
+            <span class="pill">Dallas ▾</span>
+          </div>
+          <div class="post">
+            <div class="lane"><div class="av" style="background:#8E5B45">M</div><div class="thread"></div></div>
+            <div class="post-main">
+              <div class="line1"><b>maya_sips</b><small>· 2h</small></div>
+              <p class="dname">Dirty Matcha</p>
+              <div class="where">LaLaLand Cafe</div>
+              <div class="srow"><span class="stars">★★★★★</span><em>5.0</em></div>
+              <p class="body-text">The espresso cuts through without flattening it. This is the one everything else gets measured against.</p>
+              <div class="shot" style="background:linear-gradient(145deg,#DDE3D0,#8FA37C)">
+                <span class="mod">Modified · oat, half sweet</span>
+              </div>
+              <div class="acts"><span>♡ 24</span><span>↩ 7</span><span>⌁ Save</span></div>
+            </div>
+          </div>
+          <div class="post">
+            <div class="lane"><div class="av" style="background:#4E6B4F">C</div><div class="thread"></div></div>
+            <div class="post-main">
+              <div class="line1"><b>carlos.brew</b><small>· 5h</small></div>
+              <p class="dname">Oat Milk Latte</p>
+              <div class="where">Ascension Coffee</div>
+              <div class="srow"><span class="stars">★★★★<span class="off">★</span></span><em>4.0</em></div>
+              <p class="body-text">Pulled a touch short but the oat doesn't curdle, which is more than most places manage.</p>
+              <div class="shot" style="background:linear-gradient(145deg,#E4D5BE,#B9906A)"></div>
+              <div class="acts"><span>♡ 11</span><span>↩ 2</span><span>⌁ Save</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="nav">
+          <div class="on"><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMENTS -->
+    <div class="wrap">
+      <div class="label">Comments on a review</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="topbar"><span class="bk">←</span><h3>Review</h3></div>
+
+          <div class="post" style="padding-bottom:.6rem">
+            <div class="lane"><div class="av" style="background:#8E5B45">M</div></div>
+            <div class="post-main">
+              <div class="line1"><b>maya_sips</b><small>· 2h</small></div>
+              <p class="dname">Dirty Matcha</p>
+              <div class="where">LaLaLand Cafe · Silver Lake</div>
+              <div class="srow"><span class="stars">★★★★★</span><em>5.0</em></div>
+              <div class="shot" style="height:110px; background:linear-gradient(145deg,#DDE3D0,#8FA37C)">
+                <span class="mod">Modified · oat, half sweet</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rule-note">7 replies · questions about this drink</div>
+
+          <div class="cmt">
+            <div class="av" style="background:#4E6B4F">C</div>
+            <div class="cmt-main">
+              <div class="h"><b>carlos.brew</b><small>· 1h</small></div>
+              <p>Did you ask for a specific matcha or is that just their house blend?</p>
+              <div class="u"><span>♡ 4</span><span>Reply</span></div>
+            </div>
+          </div>
+          <div class="cmt nested">
+            <div class="av" style="background:#8E5B45">M</div>
+            <div class="cmt-main">
+              <div class="h"><b>maya_sips</b><span class="op">AUTHOR</span><small>· 52m</small></div>
+              <p>House blend. They'll do ceremonial for a dollar more but I didn't bother.</p>
+              <div class="u"><span>♡ 9</span><span>Reply</span></div>
+            </div>
+          </div>
+          <div class="cmt">
+            <div class="av" style="background:#9B7FA6">J</div>
+            <div class="cmt-main">
+              <div class="h"><b>jen.pours</b><small>· 34m</small></div>
+              <p>Is half sweet still too sweet? Trying to decide if I go quarter.</p>
+              <div class="u"><span>♡ 2</span><span>Reply</span></div>
+            </div>
+          </div>
+          <div class="cmt">
+            <div class="av" style="background:#7E98A6">T</div>
+            <div class="cmt-main">
+              <div class="h"><b>theo.drips</b><small>· 12m</small></div>
+              <p>Going tomorrow. Do they open before 7?</p>
+              <div class="u"><span>♡ 1</span><span>Reply</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="composer">
+          <div class="box">Ask about this drink…</div>
+          <span class="send">Send</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST RULE -->
+    <div class="wrap">
+      <div class="label">Post tab — no blank composer</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="topbar"><span class="bk">✕</span><h3>New post</h3></div>
+          <div class="locked">
+            <div class="ico">☕</div>
+            <p>Every post starts with a drink</p>
+            <small>Sip has no text-only posts. Rate something you drank, then the conversation happens in the replies.</small>
+          </div>
+          <div class="sheet-body" style="padding-top:.2rem">
+            <div class="trow">
+              <div><p>Use my location</p><small>Pins the review to the right shop</small></div>
+              <div class="sw on"></div>
+            </div>
+            <div class="locfound"><span>◎</span><span>Ascension Coffee · 1.2 mi — tap to change</span></div>
+            <div class="lab">Photo of the drink</div>
+            <div class="drop">
+              <div class="prev"></div>
+              <div class="cap">✓ Photo added — location data removed</div>
+            </div>
+            <div class="cta">Continue</div>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div class="on"><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAP -->
+    <div class="wrap">
+      <div class="label">Map</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="map-shell">
+            <svg width="100%" height="100%" viewBox="0 0 302 582" preserveAspectRatio="xMidYMid slice" aria-label="Map of nearby cafes">
+              <rect width="302" height="582" fill="#EFEBE4"/>
+              <rect x="18" y="60" width="120" height="110" fill="#E6E1D8"/>
+              <rect x="170" y="60" width="115" height="110" fill="#E6E1D8"/>
+              <rect x="18" y="205" width="120" height="140" fill="#E6E1D8"/>
+              <rect x="170" y="205" width="115" height="140" fill="#E6E1D8"/>
+              <rect x="18" y="380" width="120" height="120" fill="#E6E1D8"/>
+              <rect x="170" y="380" width="115" height="120" fill="#E6E1D8"/>
+              <rect x="150" y="0" width="14" height="582" fill="#FBF9F6"/>
+              <rect x="0" y="180" width="302" height="14" fill="#FBF9F6"/>
+              <rect x="0" y="352" width="302" height="14" fill="#FBF9F6"/>
+              <path d="M0 512 L302 470" stroke="#FBF9F6" stroke-width="16"/>
+              <rect x="186" y="392" width="99" height="96" fill="#DFE6D8"/>
+              <text x="198" y="176" font-family="Inter" font-size="9" fill="#A79E8E" letter-spacing="1">DEEP ELLUM</text>
+              <text x="26" y="348" font-family="Inter" font-size="9" fill="#A79E8E" letter-spacing="1">BISHOP ARTS</text>
+            </svg>
+            <div class="controls">
+              <span class="ctl dark">Dallas ▾</span>
+              <span class="ctl">Top rated ▾</span>
+              <span class="ctl">Matcha</span>
+            </div>
+            <div class="pin" style="left:22%; top:21%">4.8<small>Brewed</small></div>
+            <div class="pin" style="left:72%; top:17%">4.5<small>Houndstooth</small></div>
+            <div class="pin hot" style="left:46%; top:40%">4.9<small>Ascension</small></div>
+            <div class="pin" style="left:19%; top:52%">4.2<small>La La Land</small></div>
+            <div class="pin" style="left:78%; top:49%">4.6<small>Merit</small></div>
+            <div class="sheet-card">
+              <div class="sheet-img"></div>
+              <div class="sheet-txt">
+                <h3>Ascension Coffee</h3>
+                <div class="meta">4.9 avg drink · 86 reviews · 1.2 mi</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div class="on"><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOCATION DETAIL -->
+    <div class="wrap">
+      <div class="label">Location — hours, photo, menu in app</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="hero">
+            <div class="bk">←</div>
+            <div class="attr">Photo via Google</div>
+          </div>
+          <div class="ldet">
+            <h2>Ascension Coffee</h2>
+            <div class="addr">1621 Oak Lawn Ave · Design District · 1.2 mi</div>
+            <div class="openrow">
+              <span class="dot"></span>
+              <span class="open">Open now</span>
+              <span style="color:var(--faint)">· closes 6:00 PM</span>
+            </div>
+          </div>
+          <div class="hours">
+            <div class="hrow today"><span>Monday</span><span>7:00 AM – 6:00 PM</span></div>
+            <div class="hrow"><span>Tuesday</span><span>7:00 AM – 6:00 PM</span></div>
+            <div class="hrow"><span>Wednesday</span><span>7:00 AM – 6:00 PM</span></div>
+            <div class="hrow"><span>Thursday</span><span>7:00 AM – 7:00 PM</span></div>
+            <div class="hrow"><span>Friday</span><span>7:00 AM – 7:00 PM</span></div>
+          </div>
+          <div class="acts2">
+            <div class="act primary">Directions</div>
+            <div class="act">Call</div>
+            <div class="act">Website</div>
+          </div>
+          <div class="menuwrap">
+            <div class="menubar"><span>Menu · opens inside Sip</span></div>
+            <div class="menubody">
+              <div class="mitem"><span>Oat Milk Latte</span><small>4.9 · 42 reviews</small></div>
+              <div class="mitem"><span>Chai Latte</span><small>4.9 · 36 reviews</small></div>
+              <div class="mitem"><span>Cortado</span><small>4.4 · 19 reviews</small></div>
+              <div class="mitem"><span>Cold Brew</span><small>not reviewed yet</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div class="on"><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARE -->
+    <div class="wrap">
+      <div class="label">Compare a drink — the core feature</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="search"><span>⌕</span><b>Oat Milk Latte</b></div>
+          <div class="cmp-head">
+            <h2>Oat Milk Latte</h2>
+            <p>31 shops in Dallas · ranked by this drink only</p>
+          </div>
+          <div class="p-sorts" style="padding-bottom:.6rem">
+            <span class="ctl dark">Dallas ▾</span>
+            <span class="ctl">Highest rated ▾</span>
+          </div>
+
+          <div class="rankrow best">
+            <span class="pos">1</span>
+            <div class="rthumb" style="background:linear-gradient(145deg,#EFE4D4,#C3A277)"></div>
+            <div class="rinfo">
+              <p>Ascension Coffee</p>
+              <small>Design District · 1.2 mi</small>
+              <div class="bestflag">BEST IN DALLAS</div>
+            </div>
+            <div class="rscore"><b>4.9</b><span>42 reviews</span></div>
+          </div>
+          <div class="rankrow">
+            <span class="pos">2</span>
+            <div class="rthumb" style="background:linear-gradient(145deg,#E4D5BE,#B9906A)"></div>
+            <div class="rinfo"><p>Merit Coffee</p><small>Lower Greenville · 3.4 mi</small></div>
+            <div class="rscore"><b>4.7</b><span>38 reviews</span></div>
+          </div>
+          <div class="rankrow">
+            <span class="pos">3</span>
+            <div class="rthumb" style="background:linear-gradient(145deg,#E8D8C6,#B07F5C)"></div>
+            <div class="rinfo"><p>Houndstooth</p><small>Uptown · 2.1 mi</small></div>
+            <div class="rscore"><b>4.5</b><span>51 reviews</span></div>
+          </div>
+          <div class="rankrow">
+            <span class="pos">4</span>
+            <div class="rthumb" style="background:linear-gradient(145deg,#EADDD2,#C98E72)"></div>
+            <div class="rinfo"><p>Cultivar Coffee</p><small>Oak Cliff · 5.8 mi</small></div>
+            <div class="rscore"><b>4.3</b><span>27 reviews</span></div>
+          </div>
+          <div class="rankrow">
+            <span class="pos">5</span>
+            <div class="rthumb" style="background:linear-gradient(145deg,#E6D7C6,#A98462)"></div>
+            <div class="rinfo"><p>La La Land Kind Cafe</p><small>Deep Ellum · 1.9 mi</small></div>
+            <div class="rscore"><b>4.2</b><span>64 reviews</span></div>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div class="on"><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BEST IN AREA -->
+    <div class="wrap">
+      <div class="label">Drinks → Best in area</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="shead">
+            <h2>Best in area</h2>
+            <p>Top 10 drinks · movement since last week</p>
+          </div>
+          <div class="dtabs">
+            <span class="on">Best</span><span>Trending</span><span>Search</span>
+          </div>
+          <div class="sorts" style="padding-top:.55rem">
+            <span class="ctl dark">Deep Ellum ▾</span>
+            <span class="ctl">This week ▾</span>
+          </div>
+
+          <div class="lb top3">
+            <span class="pos">1</span>
+            <div class="th" style="background:linear-gradient(145deg,#DDE3D0,#7E9470)"></div>
+            <div class="info"><p>Strawberry Matcha</p><small>Kuro Coffee</small></div>
+            <div class="right"><b>4.9</b><span class="mv down">▼ 1</span></div>
+          </div>
+          <div class="lb top3">
+            <span class="pos">2</span>
+            <div class="th" style="background:linear-gradient(145deg,#EFE4D4,#C3A277)"></div>
+            <div class="info"><p>Chai Latte</p><small>Ascension Coffee</small></div>
+            <div class="right"><b>4.9</b><span class="mv up">▲ 2</span></div>
+          </div>
+          <div class="lb top3">
+            <span class="pos">3</span>
+            <div class="th" style="background:linear-gradient(145deg,#E4D5BE,#B9906A)"></div>
+            <div class="info"><p>Oat Milk Latte</p><small>Merit Coffee</small></div>
+            <div class="right"><b>4.8</b><span class="mv flat">—</span></div>
+          </div>
+          <div class="lb">
+            <span class="pos">4</span>
+            <div class="th" style="background:linear-gradient(145deg,#F0DCD6,#B9705E)"></div>
+            <div class="info"><p>Iced Hibiscus</p><small>Alfred Tea Room</small></div>
+            <div class="right"><b>4.7</b><span class="mv up">▲ 5</span></div>
+          </div>
+          <div class="lb">
+            <span class="pos">5</span>
+            <div class="th" style="background:linear-gradient(145deg,#E8DCEA,#9B7FA6)"></div>
+            <div class="info"><p>Ube Latte</p><small>Cultivar Coffee</small></div>
+            <div class="right"><b>4.6</b><span class="mv new">NEW</span></div>
+          </div>
+          <div class="lb">
+            <span class="pos">6</span>
+            <div class="th" style="background:linear-gradient(145deg,#E6D7C6,#A98462)"></div>
+            <div class="info"><p>Cortado</p><small>Houndstooth</small></div>
+            <div class="right"><b>4.5</b><span class="mv down">▼ 3</span></div>
+          </div>
+          <div class="lb">
+            <span class="pos">7</span>
+            <div class="th" style="background:linear-gradient(145deg,#DCE6EA,#7E98A6)"></div>
+            <div class="info"><p>Cold Brew</p><small>La La Land Kind Cafe</small></div>
+            <div class="right"><b>4.4</b><span class="mv flat">—</span></div>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div class="on"><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRENDING -->
+    <div class="wrap">
+      <div class="label">Drinks → Trending</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="shead">
+            <h2>Trending</h2>
+            <p>Gaining reviews fastest, not simply highest rated</p>
+          </div>
+          <div class="dtabs">
+            <span>Best</span><span class="on">Trending</span><span>Search</span>
+          </div>
+          <div class="sorts" style="padding-top:.55rem">
+            <span class="ctl dark">Dallas ▾</span>
+            <span class="ctl">7 days ▾</span>
+          </div>
+
+          <div class="tr">
+            <div class="th" style="background:linear-gradient(145deg,#E8DCEA,#9B7FA6)"></div>
+            <div class="info"><p>Ube Latte</p><small>Cultivar Coffee · 31 reviews this week</small></div>
+            <div class="spark"><i style="height:4px"></i><i style="height:6px"></i><i style="height:5px"></i><i style="height:11px"></i><i style="height:14px"></i><i style="height:19px"></i><i style="height:22px"></i></div>
+            <span class="pct">+310%</span>
+          </div>
+          <div class="tr">
+            <div class="th" style="background:linear-gradient(145deg,#DDE3D0,#7E9470)"></div>
+            <div class="info"><p>Strawberry Matcha</p><small>Kuro Coffee · 24 reviews this week</small></div>
+            <div class="spark"><i style="height:6px"></i><i style="height:8px"></i><i style="height:9px"></i><i style="height:12px"></i><i style="height:13px"></i><i style="height:17px"></i><i style="height:20px"></i></div>
+            <span class="pct">+145%</span>
+          </div>
+          <div class="tr">
+            <div class="th" style="background:linear-gradient(145deg,#F2E4CC,#C9A95F)"></div>
+            <div class="info"><p>Honey Cardamom Latte</p><small>Merit Coffee · 18 reviews this week</small></div>
+            <div class="spark"><i style="height:3px"></i><i style="height:4px"></i><i style="height:7px"></i><i style="height:8px"></i><i style="height:12px"></i><i style="height:13px"></i><i style="height:16px"></i></div>
+            <span class="pct">+88%</span>
+          </div>
+          <div class="tr">
+            <div class="th" style="background:linear-gradient(145deg,#F0DCD6,#B9705E)"></div>
+            <div class="info"><p>Iced Hibiscus</p><small>Alfred Tea Room · 14 reviews this week</small></div>
+            <div class="spark"><i style="height:5px"></i><i style="height:6px"></i><i style="height:6px"></i><i style="height:9px"></i><i style="height:10px"></i><i style="height:11px"></i><i style="height:14px"></i></div>
+            <span class="pct">+52%</span>
+          </div>
+          <div class="tr">
+            <div class="th" style="background:linear-gradient(145deg,#DCE6EA,#7E98A6)"></div>
+            <div class="info"><p>Salted Cold Brew</p><small>Houndstooth · 11 reviews this week</small></div>
+            <div class="spark"><i style="height:4px"></i><i style="height:5px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i><i style="height:9px"></i><i style="height:11px"></i></div>
+            <span class="pct">+40%</span>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div class="on"><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAVED -->
+    <div class="wrap">
+      <div class="label">Saved</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="shead">
+            <h2>Saved</h2>
+            <p>Drinks you want to try</p>
+          </div>
+          <div class="sorts" style="padding-top:.5rem">
+            <span class="ctl dark">Dallas ▾</span>
+            <span class="ctl">Nearest ▾</span>
+          </div>
+          <div class="sv">
+            <div class="th" style="background:linear-gradient(145deg,#DDE3D0,#7E9470)"></div>
+            <div class="info">
+              <p>Strawberry Matcha</p>
+              <small>Kuro Coffee · 0.8 mi</small>
+              <small style="color:var(--pine)">Open until 6 PM</small>
+            </div>
+            <span class="bm">◆</span>
+          </div>
+          <div class="sv">
+            <div class="th" style="background:linear-gradient(145deg,#E8DCEA,#9B7FA6)"></div>
+            <div class="info">
+              <p>Ube Latte</p>
+              <small>Cultivar Coffee · 5.8 mi</small>
+              <small style="color:var(--pine)">Open until 8 PM</small>
+            </div>
+            <span class="bm">◆</span>
+          </div>
+          <div class="sv">
+            <div class="th" style="background:linear-gradient(145deg,#F2E4CC,#C9A95F)"></div>
+            <div class="info">
+              <p>Honey Cardamom Latte</p>
+              <small>Merit Coffee · 3.4 mi</small>
+              <small style="color:var(--down)">Closed · opens 7 AM</small>
+            </div>
+            <span class="bm">◆</span>
+          </div>
+          <div class="sv">
+            <div class="th" style="background:linear-gradient(145deg,#F0DCD6,#B9705E)"></div>
+            <div class="info">
+              <p>Iced Hibiscus</p>
+              <small>Alfred Tea Room · 7.1 mi</small>
+              <small style="color:var(--pine)">Open until 7 PM</small>
+            </div>
+            <span class="bm">◆</span>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div class="on"><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEW AGAIN -->
+    <div class="wrap">
+      <div class="label">Review again — already rated this</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="shead"><h2>Oat Milk Latte</h2><p>Ascension Coffee</p></div>
+          <div class="again">
+            <p>You reviewed this in March</p>
+            <small>One review per drink keeps the ranking honest. Updating replaces your old rating rather than adding a second one.</small>
+          </div>
+          <div class="prevcard">
+            <div class="img"></div>
+            <div class="tx">
+              <b>Your review · 12 March</b>
+              <span class="stars">★★★★<span class="off">★</span></span>
+              <small style="display:block; margin-top:.2rem">Pulled a touch short but the oat doesn't curdle.</small>
+            </div>
+          </div>
+          <div class="cta2">Update my review</div>
+          <div class="cta2 ghost">Review it as a modified order instead</div>
+          <p style="padding:.2rem 1.2rem; font-size:.72rem; color:var(--faint); line-height:1.45">
+            A modified order is scored separately, so it won't affect the standard drink's rating.
+          </p>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div class="on"><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="wrap">
+      <div class="label">Empty area — cold start</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="empty">
+            <div class="ico">☕</div>
+            <h2>Nobody has reviewed Denton yet</h2>
+            <p>Thirty-one coffee shops, zero reviews. Whatever you rate first becomes the first entry on the board.</p>
+          </div>
+          <div class="firstcard">
+            <div class="img"></div>
+            <div class="tx">
+              <b>West Oak Coffee Bar</b>
+              <small>0.4 mi · open until 9 PM</small>
+              <span class="badge-first">BE THE FIRST TO REVIEW</span>
+            </div>
+          </div>
+          <div class="firstcard">
+            <div class="img" style="background:linear-gradient(145deg,#EFE4D4,#C3A277)"></div>
+            <div class="tx">
+              <b>Jupiter House</b>
+              <small>0.9 mi · open until 10 PM</small>
+              <span class="badge-first">BE THE FIRST TO REVIEW</span>
+            </div>
+          </div>
+          <div class="cta2" style="margin-top:.7rem">Review a drink here</div>
+          <div class="cta2 ghost">Browse Dallas instead</div>
+        </div>
+        <div class="nav">
+          <div class="on"><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="wrap">
+      <div class="label">Profile</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="p-top">
+            <div class="p-av"></div>
+            <h2>@oscar</h2>
+            <p>Dallas, TX</p>
+          </div>
+          <div class="rank">
+            <div class="rank-lab">Current rank</div>
+            <h3>Connoisseur</h3>
+            <div class="track"><div class="fill"></div></div>
+            <small>7 more reviews to reach Curator</small>
+          </div>
+          <div class="grid3s">
+            <div class="mini"><b>23</b><span>reviews</span></div>
+            <div class="mini"><b>8</b><span>places</span></div>
+            <div class="mini"><b>4.4</b><span>avg given</span></div>
+          </div>
+          <div class="p-sorts">
+            <span class="ctl dark">Dallas ▾</span>
+            <span class="ctl">Highest rated ▾</span>
+          </div>
+          <div class="grid3">
+            <div class="tile" style="background:linear-gradient(145deg,#DDE3D0,#7E9470)"><span class="sc">5.0<small>Dirty Matcha</small></span></div>
+            <div class="tile" style="background:linear-gradient(145deg,#F0DCD6,#B9705E)"><span class="sc">5.0<small>Iced Hibiscus</small></span></div>
+            <div class="tile" style="background:linear-gradient(145deg,#EFE4D4,#C3A277)"><span class="sc">4.8<small>Oat Latte</small></span></div>
+            <div class="tile" style="background:linear-gradient(145deg,#E4D5BE,#A77C55)"><span class="sc">4.5<small>Americano</small></span></div>
+            <div class="tile" style="background:linear-gradient(145deg,#E8DCEA,#9B7FA6)"><span class="sc">4.4<small>Ube Latte</small></span></div>
+            <div class="tile" style="background:linear-gradient(145deg,#DCE6EA,#7E98A6)"><span class="sc">4.2<small>Cold Brew</small></span></div>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div class="on"><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RANKS -->
+    <div class="wrap">
+      <div class="label">Ranks</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="ranks-head">
+            <h2>Ranks</h2>
+            <p>Earned by reviewing drinks, not by posting often</p>
+          </div>
+          <div class="nowbar">
+            <div class="track"><div class="fill"></div></div>
+            <small>23 reviews · 7 more to reach Curator</small>
+          </div>
+
+          <div class="rk done">
+            <div class="rk-dot">✓</div>
+            <div class="rk-main"><p>First Sip</p><small>Your first review is in</small></div>
+            <div class="rk-req">1</div>
+          </div>
+          <div class="rk done">
+            <div class="rk-dot">✓</div>
+            <div class="rk-main"><p>Regular</p><small>You have a usual now</small></div>
+            <div class="rk-req">5</div>
+          </div>
+          <div class="rk now">
+            <div class="rk-dot">●</div>
+            <div class="rk-main"><p>Connoisseur</p><small>You can tell shops apart</small></div>
+            <div class="rk-req">15</div>
+          </div>
+          <div class="rk">
+            <div class="rk-dot">4</div>
+            <div class="rk-main"><p>Curator</p><small>People follow your picks</small></div>
+            <div class="rk-req">30</div>
+          </div>
+          <div class="rk">
+            <div class="rk-dot">5</div>
+            <div class="rk-main"><p>Tastemaker</p><small>Your reviews rank higher</small></div>
+            <div class="rk-req">50</div>
+          </div>
+          <div class="rk">
+            <div class="rk-dot">6</div>
+            <div class="rk-main"><p>Sip Legend</p><small>Top of the city leaderboard</small></div>
+            <div class="rk-req">100</div>
+          </div>
+          <p class="rk-foot">Reviews with a photo and a written note count toward your rank. Duplicate reviews of the same drink don't.</p>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div><i>＋</i>Post</div><div class="on"><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEW 1 -->
+    <div class="wrap">
+      <div class="label">New review — step 1</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="dim"></div>
+          <div class="sheet">
+            <div class="grab"></div>
+            <div class="sheet-head"><h3>Where are you?</h3><span>Step 1 of 3</span></div>
+            <div class="sheet-body">
+              <div class="trow">
+                <div><p>Use my location</p><small>Pins the review to the right shop</small></div>
+                <div class="sw on"></div>
+              </div>
+              <div class="locfound"><span>◎</span><span>Ascension Coffee · 1.2 mi — tap to change</span></div>
+              <div class="lab">Photo of the drink</div>
+              <div class="drop">
+                <div class="prev"></div>
+                <div class="cap">✓ Photo added — location data removed</div>
+              </div>
+              <div class="cta">Continue</div>
+            </div>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div class="on"><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEW 2 -->
+    <div class="wrap">
+      <div class="label">New review — step 2</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="dim"></div>
+          <div class="sheet">
+            <div class="grab"></div>
+            <div class="sheet-head"><h3>How was it?</h3><span>Step 2 of 3</span></div>
+            <div class="sheet-body">
+              <div class="lab">Your rating</div>
+              <div class="bigstars">★★★★<span class="off">★</span></div>
+              <div class="trow">
+                <div><p>Modified order?</p><small>Kept separate so it doesn't skew the drink's score</small></div>
+                <div class="sw on"></div>
+              </div>
+              <div class="lab">What did you change?</div>
+              <div class="field">Oat milk, half sweet</div>
+              <div class="cta">Continue</div>
+              <div class="cta ghost">Back</div>
+            </div>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div class="on"><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEW STEP 3 -->
+    <div class="wrap">
+      <div class="label">New review — step 3</div>
+      <div class="phone">
+        <div class="scroll">
+          <div class="bar"><span>9:41</span><span>●●●</span></div>
+          <div class="dim"></div>
+          <div class="sheet">
+            <div class="grab"></div>
+            <div class="sheet-head">
+              <h3>Anything to add?</h3>
+              <span>Step 3 of 3</span>
+            </div>
+            <div class="sheet-body">
+              <div class="lab">Note <span style="opacity:.6">(optional)</span></div>
+              <textarea class="field dim-text" readonly>Pulled a touch short but the oat doesn't curdle, which is more than most places manage.</textarea>
+
+              <div class="summary">
+                <div class="t">Oat Milk Latte</div>
+                <div class="s">Ascension Coffee</div>
+                <span class="stars">★★★★<span class="off">★</span></span>
+                <div style="margin-top:.4rem"><span class="mod" style="position:static; display:inline-block">Modified · oat, half sweet</span></div>
+              </div>
+
+              <div class="cta">Post review</div>
+              <div class="cta ghost">Back</div>
+            </div>
+          </div>
+        </div>
+        <div class="nav">
+          <div><i>▦</i>Feed</div><div><i>◎</i>Map</div><div><i>⌕</i>Drinks</div><div class="on"><i>＋</i>Post</div><div><i>◍</i>You</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="notes">
+    <h2>On the launch sequence</h2>
+    <ul>
+      <li>The cup tips, the brick wave rises from the bottom with a curved leading edge, and the wordmark and line ride up with it. The wave holds for roughly a second and a quarter before the app appears — long enough to read the line, short enough not to resent.</li>
+      <li>Total length is about 3.9 seconds. That's long for a splash. If it starts to grate, cut the hold rather than the wave; the wave is the part that reads as craft.</li>
+    </ul>
+
+    <h2>The screen you were missing</h2>
+    <p>There was no screen for the thing the whole app is about. Feed, map, and profile are all browsing — none of them answer "who makes the best oat milk latte in Dallas." That's now its own tab, with city and rating sorts and a flag on the top result. If a grader or an investor opens this app once, that's the screen that has to exist.</p>
+
+
+    <h2>Comments, and the rule behind them</h2>
+    <ul>
+      <li><strong>Replies hang off a review and nothing else.</strong> There is no blank composer anywhere in the app — the Post tab opens straight into step 1 of a review. If you want to say something on Sip, you have to have drunk something first.</li>
+      <li><strong>That rule is the moderation strategy, not just a product choice.</strong> Most of what goes wrong on social apps arrives through free-form posting: spam, self-promotion by shops, picked fights. Requiring a photo, a location, and a rating before anyone can speak raises the cost of a junk post from seconds to a real trip.</li>
+      <li><strong>The questions people actually ask are logistical.</strong> Which matcha, how sweet, what time do they open. Those are answerable by the person who was just there, which is why threading replies under the review beats a separate Q&amp;A.</li>
+      <li><strong>The author gets a marker.</strong> When a reviewer answers a question about their own drink, that reply carries more weight than a bystander's guess, and it should be visible without reading the handle.</li>
+      <li>One thing to decide: whether replies count toward rank. I'd say no — ranking on replies turns a review app into a comment farm. Ranks stay tied to reviews with a photo and a note.</li>
+    </ul>
+    <h2>Three other things worth adding</h2>
+    <ul>
+      <li><strong>A saved list.</strong> Yelp's bookmark, basically. Someone reads a review at 11pm and wants it on Saturday. Cheap to build, and it's the feature that brings people back without a notification.</li>
+      <li><strong>Review again.</strong> Your schema already handles it — posting the same unmodified drink updates the existing review. But there's no UI for it, so a user who revisits a shop will think the app is broken when their second review vanishes. Worth a visible "update your review" state.</li>
+      <li><strong>An empty state with a job.</strong> A new user in a city with no reviews sees nothing, decides the app is dead, and leaves. That screen should name the nearest shop with no reviews yet and ask them to be first. It converts the weakest moment in the product into the one that generates your content.</li>
+    </ul>
+  
+
+    <h2>Movement, and the maths behind it</h2>
+    <ul>
+      <li>Green up, red down, a dash for no change, amber NEW for a first appearance. The number is places moved, not score change — "▲ 2" means it climbed two positions.</li>
+      <li>Ranking on raw average breaks immediately: a drink with one five-star review outranks one with two hundred at 4.8. Use a weighted score — a Bayesian average that pulls low-count drinks toward the city mean until they earn their position. Otherwise your leaderboard is noise and every new drink debuts at number one.</li>
+      <li>Snapshot the standings weekly into a table and compare. Computing movement live against a moving window produces positions that flicker by the hour, which makes the board feel untrustworthy.</li>
+      <li>Trending is deliberately a different metric: rate of new reviews, not rating. A 4.2 that forty people tried this week is more interesting than a 4.9 nobody has ordered since August. Keep the two boards separate or they collapse into each other.</li>
+    </ul>
+
+    <h2>On the Google Places integration</h2>
+    <ul>
+      <li><strong>Hours and photos come from Places; the menu does not.</strong> There is no structured menu field. You get <code>regularOpeningHours</code>, <code>photos</code>, <code>websiteUri</code>, and <code>nationalPhoneNumber</code>. So the "menu" on this screen is your own drink list built from reviews — which is better anyway, since it carries ratings their real menu never will.</li>
+      <li><strong>Caching rules shape the architecture.</strong> Google lets you store <code>place_id</code> indefinitely but not the other fields, so hours and photos get fetched near-live and cached only briefly. Practically: store place_id in RDS, fetch details through a Lambda, cache the response in ElastiCache or a short-TTL DynamoDB table.</li>
+      <li><strong>Photos are billed per request</strong> and each one needs the attribution Google returns. The small "Photo via Google" line on the hero is a requirement, not decoration.</li>
+      <li>Open/closed status is computed from the hours in the user's timezone, not handed to you as a boolean in the basic response. Easy to get wrong across midnight closes — a shop open until 1 AM reads as closed all evening if you compare naively.</li>
+    </ul>
+
+    <h2>The three additions</h2>
+    <ul>
+      <li><strong>Saved</strong> shows open-now status per entry, which is what turns a saved list into something you act on at 2pm on a Saturday rather than a list you never reopen.</li>
+      <li><strong>Review again</strong> explains the constraint instead of just enforcing it, and offers the modified-order escape hatch — which is the honest answer when someone genuinely did order it differently this time.</li>
+      <li><strong>The empty state names real shops and asks for a first review.</strong> It also offers a way back to a populated city, so a new user in a dead area isn't trapped looking at nothing.</li>
+    </ul>
+  </div>
+
+<script>
+  const QUOTES = [
+    'Somewhere nearby, someone just found their new usual.',
+    'Every great order started as a guess.',
+    'The best cup in town is still unreviewed.',
+    'Your next favorite is three blocks away.',
+    'Good taste is just curiosity with practice.',
+    'Try the thing you always skip.'
+  ];
+  const launch = document.getElementById('launch');
+  const replay = document.getElementById('replay');
+  const quote = document.getElementById('quote');
+  let i = 0;
+  function play() {
+    quote.textContent = QUOTES[i % QUOTES.length];
+    i++;
+    launch.classList.remove('go');
+    void launch.offsetWidth;
+    launch.classList.add('go');
+  }
+  replay.addEventListener('click', play);
+  setTimeout(play, 400);
+</script>
+</div>
+</body>
+</html>

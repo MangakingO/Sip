@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sip — demo client</title>
+<style>
+  :root {
+    --ink: #1f1d1a;
+    --paper: #fbfaf7;
+    --rule: #ddd8cf;
+    --jade: #4a7c62;
+    --muted: #6b6558;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 2rem 1.25rem 4rem;
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 16px/1.55 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  }
+  main { max-width: 46rem; margin: 0 auto; }
+  h1 { font-size: 2rem; margin: 0 0 .25rem; letter-spacing: -.01em; }
+  .sub { color: var(--muted); margin: 0 0 2rem; }
+  section { border-top: 1px solid var(--rule); padding: 1.5rem 0; }
+  h2 { font-size: 1.1rem; margin: 0 0 1rem; font-weight: 600; }
+  label { display: block; font-size: .9rem; color: var(--muted); margin: .75rem 0 .25rem; }
+  input, select, textarea, button {
+    font: inherit;
+    width: 100%;
+    padding: .55rem .7rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: #fff;
+    color: inherit;
+  }
+  button {
+    width: auto;
+    margin-top: 1rem;
+    background: var(--jade);
+    border-color: var(--jade);
+    color: #fff;
+    cursor: pointer;
+  }
+  button:hover { background: #3d6751; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .row { display: flex; gap: .75rem; flex-wrap: wrap; }
+  .row > * { flex: 1 1 12rem; }
+  .status { margin-top: .9rem; font-size: .9rem; color: var(--muted); min-height: 1.4em; }
+  .status.error { color: #a33; }
+  table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  th, td { text-align: left; padding: .5rem .4rem; border-bottom: 1px solid var(--rule); }
+  th { font-size: .85rem; font-weight: 600; color: var(--muted); }
+  .score { font-size: 1.3rem; font-weight: 600; color: var(--jade); }
+  .hidden { display: none; }
+  code { font-size: .85em; background: #efece5; padding: .1em .35em; border-radius: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sip</h1>
+  <p class="sub">Demo client for the midpoint walkthrough. Rate a drink, not a coffee shop.</p>
+
+  <section>
+    <h2>Configuration</h2>
+    <p class="sub">Paste the values from <code>sam deploy</code> outputs. They stay in this page only.</p>
+    <div class="row">
+      <div>
+        <label for="apiUrl">API base URL</label>
+        <input id="apiUrl" value="https://b67lfkpp9g.execute-api.us-east-2.amazonaws.com/prod">
+      </div>
+      <div>
+        <label for="clientId">Cognito client ID</label>
+        <input id="clientId" value="2butsgr1jjs9gfii2bap0ohkhg">
+      </div>
+      <div>
+        <label for="region">Region</label>
+        <input id="region" value="us-east-2">
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sign in</h2>
+    <div class="row">
+      <div>
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username">
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password">
+      </div>
+    </div>
+    <button id="signInBtn">Sign in</button>
+    <p class="status" id="authStatus"></p>
+  </section>
+
+  <section id="reviewSection" class="hidden">
+    <h2>Post a review</h2>
+    <label for="drinkId">Drink</label>
+    <select id="drinkId">
+      <optgroup label="Brewed &amp; Co · 101 Main St, Fort Worth">
+        <option value="ea43582d-cecd-4eec-a269-8b48eb8f8f75">Matcha Latte</option>
+        <option value="7cd71c72-22f5-4054-a387-31d9adc72f6e">Oat Milk Latte</option>
+        <option value="4513d7a5-fab6-426a-b646-9f91923d0ecb">Cortado</option>
+      </optgroup>
+      <optgroup label="Avoca Coffee · 1311 W Magnolia Ave, Fort Worth">
+        <option value="ddd0e7ea-f28f-417b-8fee-1ca0d55d6119">Matcha Latte</option>
+        <option value="6b65d345-ddc8-4023-aaa0-c45decf016b8">Oat Milk Latte</option>
+        <option value="db0ab776-1952-427b-a8a4-da297d057401">Cortado</option>
+      </optgroup>
+    </select>
+    <p class="sub" style="margin:.35rem 0 0; font-size:.8rem">
+      Reviews attach to a menu item at one location, not to a drink name. The page
+      sends that item's id; the shop's menu is what the user picks from.
+    </p>
+    <div class="row">
+      <div>
+        <label for="rating">Rating</label>
+        <select id="rating">
+          <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
+        </select>
+      </div>
+      <div>
+        <label for="photo">Photo</label>
+        <input id="photo" type="file" accept="image/*">
+      </div>
+    </div>
+    <label for="note">Note</label>
+    <textarea id="note" rows="2" placeholder="What was it like?"></textarea>
+    <button id="postBtn">Post review</button>
+    <p class="status" id="reviewStatus"></p>
+  </section>
+
+  <section>
+    <h2>Compare a drink across locations</h2>
+    <label for="drinkName">Drink name</label>
+    <input id="drinkName" value="Oat Milk Latte">
+    <button id="rankBtn">Show rankings</button>
+    <p class="status" id="rankStatus"></p>
+    <table id="rankTable" class="hidden">
+      <thead>
+        <tr><th>Location</th><th>Rating</th><th>Reviews</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let idToken = null;
+
+const cfg = () => ({
+  api: $('apiUrl').value.replace(/\/$/, ''),
+  clientId: $('clientId').value.trim(),
+  region: $('region').value.trim(),
+});
+
+function setStatus(el, message, isError) {
+  el.textContent = message;
+  el.classList.toggle('error', Boolean(isError));
+}
+
+$('signInBtn').onclick = async () => {
+  const { clientId, region } = cfg();
+  if (!clientId) return setStatus($('authStatus'), 'Add the Cognito client ID first.', true);
+
+  setStatus($('authStatus'), 'Signing in…');
+  try {
+    const res = await fetch(`https://cognito-idp.${region}.amazonaws.com/`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/x-amz-json-1.1',
+        'x-amz-target': 'AWSCognitoIdentityProviderService.InitiateAuth',
+      },
+      body: JSON.stringify({
+        AuthFlow: 'USER_PASSWORD_AUTH',
+        ClientId: clientId,
+        AuthParameters: { USERNAME: $('email').value, PASSWORD: $('password').value },
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Sign-in failed');
+
+    idToken = data.AuthenticationResult.IdToken;
+    setStatus($('authStatus'), 'Signed in. Token acquired.');
+    $('reviewSection').classList.remove('hidden');
+  } catch (err) {
+    setStatus($('authStatus'), err.message, true);
+  }
+};
+
+$('postBtn').onclick = async () => {
+  const { api } = cfg();
+  const file = $('photo').files[0];
+  if (!file) return setStatus($('reviewStatus'), 'Pick a photo — every review needs one.', true);
+
+  const btn = $('postBtn');
+  btn.disabled = true;
+  try {
+    setStatus($('reviewStatus'), 'Requesting upload URL…');
+    const presignRes = await fetch(`${api}/uploads`, {
+      method: 'POST',
+      headers: { authorization: idToken, 'content-type': 'application/json' },
+      body: JSON.stringify({ contentType: file.type }),
+    });
+    const presign = await presignRes.json();
+    if (!presignRes.ok) throw new Error(presign.error || 'Could not get an upload URL');
+
+    setStatus($('reviewStatus'), 'Uploading photo straight to S3…');
+    const putRes = await fetch(presign.uploadUrl, {
+      method: 'PUT',
+      headers: { 'content-type': file.type },
+      body: file,
+    });
+    if (!putRes.ok) throw new Error('S3 rejected the upload');
+
+    setStatus($('reviewStatus'), 'Saving review…');
+    const reviewRes = await fetch(`${api}/reviews`, {
+      method: 'POST',
+      headers: { authorization: idToken, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        drinkId: $('drinkId').value.trim(),
+        rating: Number($('rating').value),
+        note: $('note').value,
+        photoKey: presign.key,
+      }),
+    });
+    const review = await reviewRes.json();
+    if (!reviewRes.ok) throw new Error(review.error || 'Could not save the review');
+
+    setStatus($('reviewStatus'), `Saved. The thumbnail Lambda is running now. Review ${review.id}`);
+  } catch (err) {
+    setStatus($('reviewStatus'), err.message, true);
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+$('rankBtn').onclick = async () => {
+  const { api } = cfg();
+  const name = $('drinkName').value.trim();
+  setStatus($('rankStatus'), 'Loading…');
+  try {
+    const res = await fetch(`${api}/rankings?drink=${encodeURIComponent(name)}`, {
+      headers: idToken ? { authorization: idToken } : {},
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+
+    const body = $('rankTable').querySelector('tbody');
+    body.innerHTML = '';
+    if (!data.results.length) {
+      setStatus($('rankStatus'), `No location serves a drink called "${name}" yet.`);
+      $('rankTable').classList.add('hidden');
+      return;
+    }
+    for (const row of data.results) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.location_name}</td>
+        <td class="score">${row.average_rating ?? '—'}</td>
+        <td>${row.review_count}</td>`;
+      body.appendChild(tr);
+    }
+    $('rankTable').classList.remove('hidden');
+    setStatus($('rankStatus'), `${data.results.length} locations serve this drink.`);
+  } catch (err) {
+    setStatus($('rankStatus'), err.message, true);
+  }
+};
+</script>
+</body>
+</html>
