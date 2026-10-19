@@ -1,6 +1,8 @@
 # Sip — drink-level reviews for coffee, tea, and matcha
 
 VIDEO LINK TO OUR DEMO: https://www.icloud.com/photos/#/icloudlinks/082VIUqYAR7tXZy6a8-C7lIIQ/
+
+Video Timestamped on 10/14/2026
 Our current progress is shown on this video link. Currently we have the ability to sign in with a unique token for a user,
 then the ability to post a drink review; in this case, a Matcha Latte, that said drink is then 
 populated to the drinks database, where we can see all the locations that currently have that drink and its rating.
