@@ -1,5 +1,7 @@
 # Sip — drink-level reviews for coffee, tea, and matcha
 
+VIDEO LINK TO OUR DEMO: https://www.icloud.com/photos/#/icloudlinks/082VIUqYAR7tXZy6a8-C7lIIQ/
+
 Yelp and Google rate the coffee shop. Sip rates the drink.
 
 A four-star venue score blends ambiance, seating, Wi-Fi and service, and tells
